@@ -1,0 +1,11 @@
+categories:
+  buildingwand:buildingwand:
+    priority: 10
+    name: '<!i>建筑之杖'
+    lore:
+      - '<!i><gray>ConstructionWand 服务端移植'
+    icon: buildingwand:diamond_wand
+    list:
+      - buildingwand:stone_wand
+      - buildingwand:iron_wand
+      - buildingwand:diamond_wand

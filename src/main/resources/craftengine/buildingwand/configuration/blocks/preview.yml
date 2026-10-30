@@ -1,0 +1,27 @@
+# 建筑之杖 · 预览方块（由 tools/generate_ce_pack.py 生成，请勿手工编辑）
+#
+# 贴图 64x64，四条边各 1px 纯白，中间全透明。
+# BlockDisplay 没有透明度控制，只能靠方块自身材质做「描边 + 中间透过去」。
+#
+# 【刻意不写 items 段、也不挂分类】：写了会让 CE 把同一模型再登记成物品，
+# 物品浏览器里就会出现重复条目。方块没有对应物品，玩家拿不到也放不下。
+
+blocks:
+  buildingwand:preview:
+    settings:
+      template:
+        - default:settings/transparent_1x1x1
+      merges:
+        hardness: 0
+        resistance: 0
+        is_suffocating: false
+        is_view_blocking: false
+        is_redstone_conductor: false
+        can_occlude: false
+        replaceable: true
+        block_light: 0
+        propagate_skylight: true
+    state:
+      auto_state: solid
+      model:
+        path: buildingwand:block/preview

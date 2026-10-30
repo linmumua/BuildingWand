@@ -1,0 +1,12 @@
+configuration/blocks/preview.yml
+configuration/categories.yml
+configuration/items/wands.yml
+pack.yml
+resourcepack/assets/buildingwand/models/block/preview.json
+resourcepack/assets/buildingwand/models/item/diamond_wand.json
+resourcepack/assets/buildingwand/models/item/iron_wand.json
+resourcepack/assets/buildingwand/models/item/stone_wand.json
+resourcepack/assets/buildingwand/textures/block/preview.png
+resourcepack/assets/buildingwand/textures/item/diamond_wand.png
+resourcepack/assets/buildingwand/textures/item/iron_wand.png
+resourcepack/assets/buildingwand/textures/item/stone_wand.png

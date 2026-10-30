@@ -1,0 +1,48 @@
+{
+	"format_version": "26.3",
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"elements": [
+		{
+			"name": "shaft",
+			"from": [6.121, 0.496, 7.6],
+			"to": [7.721, 10.996, 8.4],
+			"rotation": {"angle": -45, "axis": "z", "origin": [6.921, 5.746, 8]},
+			"color": 7,
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#missing"},
+				"east": {"uv": [0, 0, 2, 2], "texture": "#missing"},
+				"south": {"uv": [0, 0, 2, 2], "texture": "#missing"},
+				"west": {"uv": [0, 0, 2, 2], "texture": "#missing"},
+				"up": {"uv": [0, 0, 2, 2], "texture": "#missing"},
+				"down": {"uv": [0, 0, 2, 2], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "gem",
+			"from": [7.321, 8.496, 6.9],
+			"to": [12.321, 13.496, 9.1],
+			"rotation": {"angle": -45, "axis": "z", "origin": [9.821, 10.996, 8]},
+			"color": 8,
+			"faces": {
+				"north": {"uv": [2, 0, 6, 4], "texture": "#missing"},
+				"east": {"uv": [6, 0, 8, 2], "texture": "#missing"},
+				"south": {"uv": [2, 0, 6, 4], "texture": "#missing"},
+				"west": {"uv": [6, 0, 8, 2], "texture": "#missing"},
+				"up": {"uv": [6, 0, 8, 2], "texture": "#missing"},
+				"down": {"uv": [6, 0, 8, 2], "texture": "#missing"}
+			}
+		}
+	],
+	"display": {},
+	"groups": [
+		{
+			"name": "staff",
+			"origin": [8, 6.5, 8],
+			"scope": 0,
+			"color": 0,
+			"shade": false,
+			"children": [0, 1]
+		}
+	]
+}

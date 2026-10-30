@@ -1,0 +1,28 @@
+items:
+  buildingwand:stone_wand:
+    material: stick
+    data:
+      item-name: '<!i>石之杖'
+      lore:
+        - '<gray>一次最多铺 9 格'
+    model:
+      type: minecraft:model
+      path: buildingwand:item/stone_wand
+  buildingwand:iron_wand:
+    material: stick
+    data:
+      item-name: '<!i>铁之杖'
+      lore:
+        - '<gray>一次最多铺 27 格'
+    model:
+      type: minecraft:model
+      path: buildingwand:item/iron_wand
+  buildingwand:diamond_wand:
+    material: stick
+    data:
+      item-name: '<!i>钻石之杖'
+      lore:
+        - '<gray>一次最多铺 128 格'
+    model:
+      type: minecraft:model
+      path: buildingwand:item/diamond_wand

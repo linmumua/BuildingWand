@@ -1,0 +1,16 @@
+# 构建产物
+build/
+out/
+.gradle/
+
+# 第三方依赖（自行放置，见 README「从源码构建」）
+libs/*.jar
+constructionwand-*.jar
+
+# 本地工具与临时文件
+.tmp_check/
+.tmp_ref/
+.narrafork/
+*.log
+*.bak
+*.bak-*

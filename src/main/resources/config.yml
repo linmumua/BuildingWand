@@ -1,0 +1,69 @@
+# 建筑之杖 配置
+# 数值语义与原模组 ConstructionWand 一致：
+#   limit       一次最多铺开的方块数
+#   durability  耐久度（-1 表示不可破坏）
+wand:
+  stone:
+    durability: 131
+    limit: 9
+  iron:
+    durability: 250
+    limit: 27
+  diamond:
+    durability: 1561
+    limit: 128
+
+misc:
+  # 最大操作半径（0 表示不限制）。这是防卡顿闸门，不是平衡性设置
+  max-range: 100
+  # 撤销保留的步数：默认 3，即可以逐次往前撤 3 次操作。设为 1 则只能撤最近一次。
+  undo-history: 3
+  # 放置方块时是否触发方块更新（开启后沙子/水会连锁，性能明显下降）
+  apply-physics: false
+
+# 新之杖的初始选项
+default-options:
+  lock: NOLOCK
+  direction: TARGET
+  replace: true
+  match: SIMILAR
+  random: false
+
+# 相似方块组：同一组的方块在 SIMILAR 模式下互相视为同类
+similar-blocks:
+  - - minecraft:dirt
+    - minecraft:grass_block
+    - minecraft:coarse_dirt
+    - minecraft:podzol
+    - minecraft:mycelium
+    - minecraft:farmland
+    - minecraft:dirt_path
+    - minecraft:rooted_dirt
+  - - minecraft:stone
+    - minecraft:cobblestone
+
+# 容器方块（TileEntity）黑白名单。whitelist=true 时只有名单内的允许被之杖操作
+tile-entity:
+  whitelist: false
+  list:
+    - minecraft:chest
+    - minecraft:barrel
+    - minecraft:furnace
+
+# 放置预览
+preview:
+  enabled: true
+  # 刷新间隔（tick）
+  interval-ticks: 4
+  # 单次最多显示的预览方块数
+  max-blocks: 256
+  # 建造预览的发光描边颜色。留空或写 NONE 表示不发光（默认），只显示半透明方块本身
+  build-glow: ''
+  # 破坏预览的粒子颜色（破坏预览用粒子沿方块棱描框，不再使用方块材质）
+  destroy-glow: '#FF8080'
+  # 建造预览显示成什么方块。BlockDisplay 没有透明度控制，能透过去看地形只能靠方块自身材质。
+  # 默认用本插件资源包里的 preview 方块（64x64 贴图、1px 白色描边、中间全透明），
+  # 也可以填任何原版方块 id，或填 TARGET 显示被瞄准的真实方块。
+  build-material: 'buildingwand:preview'
+  # 输出预览诊断日志（需要 buildingwand.debug 权限），排查「预览不出现」时打开
+  debug: false

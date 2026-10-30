@@ -1,0 +1,24 @@
+name: BuildingWand
+main: cn.linmumua.buildingwand.BuildingWandPlugin
+version: '1.0.0'
+api-version: '1.21'
+folia-supported: true
+authors: [linmumua]
+description: 建筑之杖 —— ConstructionWand 服务端移植
+
+# 【为什么不写 plugin.yml】
+# TabooLib 的 Gradle 插件会自动生成 plugin.yml，并把 main 指向它自己的包装类
+# （cn.linmumua.buildingwand.taboolib.platform.BukkitPlugin）。那个包装层要靠
+# 「@Awake 扫描到继承了 taboolib Plugin 的类」才能拿到插件实例；拿不到时
+# onEnable 永远不会被回调 —— 现象是插件出现在插件列表里、日志有 Enabling，
+# 但没有任何自己的输出，也不释放配置、不注册命令。已在实服复现过。
+# 这里改用 paper-plugin.yml 直接声明本插件自己的类为 main，TabooLib 仅作为库被注入，
+# 与本服其它 TabooLib 插件（MUZ）的做法一致。
+
+dependencies:
+  server:
+    # 代码里直接 import 了 CraftEngine 的类型，必须 join-classpath 才拿得到对方的类
+    CraftEngine:
+      load: BEFORE
+      required: true
+      join-classpath: true
