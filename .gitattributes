@@ -1,0 +1,13 @@
+# 统一换行符：仓库内一律存 LF，检出时按平台转换。
+# 不写这条时，Windows 环境下工作区的 CRLF 会被原样写进 blob，
+# 导致同一份源码在不同机器上哈希不同、diff 出现整文件变更。
+* text=auto eol=lf
+
+# 批处理文件必须保持 CRLF，否则 Windows 下无法执行
+*.bat text eol=crlf
+
+# 二进制文件不做换行符转换
+*.jar binary
+*.png binary
+*.bbmodel binary
+*.zip binary

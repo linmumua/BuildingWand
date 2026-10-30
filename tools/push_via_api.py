@@ -45,9 +45,18 @@ def local_files() -> list[str]:
 
 
 def blob_sha(path: str) -> str:
-    """把本地文件内容写成远程 blob，返回 sha。"""
+    """把本地文件内容写成远程 blob，返回 sha。
+
+    【必须按 git 的存储形式上传】仓库里源码以 LF 保存（见 .gitattributes），
+    而 Windows 工作区磁盘上是 CRLF。直接上传原文会让远程与本地 git 索引
+    的哈希对不上，之后正常 push 时 git 会把这些文件全都当成改动。
+    """
     with open(path, "rb") as handle:
         data = handle.read()
+    if path.endswith(".bat"):
+        data = data.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
+    elif not path.endswith((".jar", ".png", ".zip", ".bbmodel")):
+        data = data.replace(b"\r\n", b"\n")
     encoded = base64.b64encode(data).decode("ascii")
     result = gh([f"repos/{REPO}/git/blobs", "--method", "POST"],
                 {"content": encoded, "encoding": "base64"})
