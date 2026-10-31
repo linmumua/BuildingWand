@@ -23,13 +23,14 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.Particle;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Transformation;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -285,6 +286,16 @@ public final class PreviewTask {
     // ---------------------------------------------------------------- 实体
 
     private void render(Player player, List<Pos> plan, BlockData displayData) {
+        // 建造预览的发光由配置控制：留空或写 NONE 表示不加发光描边
+        render(player, plan, displayData, parseGlow(config.previewBuildGlow()));
+    }
+
+    /**
+     * 生成预览方块实体。
+     *
+     * @param glow 发光描边颜色；null 表示不加发光
+     */
+    private void render(Player player, List<Pos> plan, BlockData displayData, Color glow) {
         // 这里必须【同步】移除旧实体：本方法在玩家自己的区域线程上执行，而预览方块就在
         // 玩家附近（射线 6 格内），区块必然已加载，可以直接 remove。
         // 如果改成派发到实体的调度器上异步删，删除会推到下一 tick，期间新旧两批实体
@@ -292,12 +303,6 @@ public final class PreviewTask {
         removeNow(player.getUniqueId());
 
         World world = player.getWorld();
-        // 【发光默认关闭，但保留配置】
-        // 留空（或写 NONE）表示不给实体加发光描边，此时预览就是纯粹的半透明方块本身。
-        String glowHex = config.previewBuildGlow();
-        Color glow = glowHex == null || glowHex.isBlank() || "NONE".equalsIgnoreCase(glowHex)
-                ? null : parseColor(glowHex);
-
         List<UUID> ids = new ArrayList<>(plan.size());
         for (Pos pos : plan) {
             Location loc = new Location(world, pos.x(), pos.y(), pos.z());
@@ -310,6 +315,13 @@ public final class PreviewTask {
                 entity.setInvulnerable(true);
                 entity.setGravity(false);
                 entity.setBlock(displayData);
+                // 预览高度：只缩放 Y 轴，宽度保持一格；底面贴在方块底部不动
+                float peek = (float) config.previewPeek();
+                if (peek != 1.0f) {
+                    entity.setTransformation(new Transformation(
+                            new Vector3f(), new Quaternionf(),
+                            new Vector3f(1.0f, peek, 1.0f), new Quaternionf()));
+                }
                 if (glow != null) {
                     entity.setGlowing(true);
                     entity.setGlowColorOverride(glow);
@@ -322,25 +334,34 @@ public final class PreviewTask {
         spawned.put(player.getUniqueId(), ids);
     }
 
+    /** 解析发光颜色；空值或 NONE 表示不发光。 */
+    private static Color parseGlow(String hex) {
+        if (hex == null || hex.isBlank() || "NONE".equalsIgnoreCase(hex)) {
+            return null;
+        }
+        return parseColor(hex);
+    }
+
     /**
-     * 撤销预览：蹲下时用浅红粒子沿着每个会被回滚的方块棱描框。
+     * 撤销预览：蹲下时用红色发光方块标出会被回滚的位置。
      *
      * <p>它在射线检测之前分流，因为撤销与准星指向哪无关——玩家要看的是
      * 「按 Shift+左键会拆掉哪些方块」，而不是眼前的这一面墙。</p>
      *
-     * <p>每 4 tick 跑一次，所以先比对签名：撤销内容没变就不重发粒子，
-     * 否则每次刷新都在同一批位置重画，客户端会被粒子刷屏。</p>
+     * <p>用实体而不是粒子：粒子每帧都要重发，蹲着不动时也会持续刷屏；
+     * 实体只要生一次就能一直挂着，玩家松开 Shift 或撤销后才清掉。</p>
+     *
+     * <p>每 4 tick 跑一次，所以先比对签名：撤销内容没变就不重建实体。</p>
      */
     private void updateUndoPreview(Player player) {
         UUID id = player.getUniqueId();
-        // 撤销预览只用粒子，先把铺面预览留下的实体清掉，避免两者叠在一起
-        removeNow(id);
 
         UndoHistory.Operation operation = service.undoHistory().peekLatest(player);
         if (operation == null) {
             debug(player, "跳过：没有可撤销的操作");
             signature.remove(id);
             cheapKey.remove(id);
+            removeNow(id);
             return;
         }
         List<Pos> plan = new ArrayList<>(operation.changes().size());
@@ -356,68 +377,22 @@ public final class PreviewTask {
             return;
         }
         signature.put(id, sig);
-        debug(player, "渲染 " + plan.size() + " 个撤销预览粒子框");
-        renderOutlineParticles(player, plan, parseColor(config.previewDestroyGlow()));
-    }
-
-    /**
-     * 用粒子沿着每个方块的十二条棱描框。
-     *
-     * <p>为什么不用实体：这些位置与已有方块完全重合，实心方块会把目标整个盖住，
-     * 反而看不见；粒子只画棱，既标出了范围又保留了对地形的观察。</p>
-     *
-     * <p>粒子用 {@link Player#spawnParticle} 逐个发给本人，不会广播给周围玩家。
-     * 每个方块 12 条棱、每条棱取 3 个点；格数多时退化成只画 8 个角，
-     * 避免一次几百格时把粒子数顶到上万。</p>
-     */
-    private void renderOutlineParticles(Player player, List<Pos> plan, Color color) {
-        Particle.DustOptions dust = new Particle.DustOptions(color, 1.0f);
-        boolean coarse = plan.size() > 64;
-        int steps = coarse ? 1 : 2;
-        Set<String> drawn = new HashSet<>();
-
-        for (Pos pos : plan) {
-            double x = pos.x();
-            double y = pos.y();
-            double z = pos.z();
-            // 12 条棱：选定一个轴从 0 走到 1，另外两个轴固定在 0 或 1（2x2=4 条/轴）。
-            for (int dir = 0; dir < 3; dir++) {
-                for (int i = 0; i <= 1; i++) {
-                    for (int j = 0; j <= 1; j++) {
-                        for (int s = 0; s <= steps; s++) {
-                            double t = (double) s / steps;
-                            double px, py, pz;
-                            if (dir == 0) {
-                                px = t; py = i; pz = j;
-                            } else if (dir == 1) {
-                                px = i; py = t; pz = j;
-                            } else {
-                                px = i; py = j; pz = t;
-                            }
-                            double wx = x + px;
-                            double wy = y + py;
-                            double wz = z + pz;
-                            // 相邻方块共享顶点与棱上的点，去重后能省掉一大半粒子
-                            String key = ((long) Math.round(wx * 100)) + ":" + Math.round(wy * 100)
-                                    + ":" + Math.round(wz * 100);
-                            if (!drawn.add(key)) {
-                                continue;
-                            }
-                            player.spawnParticle(Particle.DUST, wx, wy, wz, 1, 0, 0, 0, 0, dust);
-                        }
-                    }
-                }
-            }
-        }
+        // 撤销预览用独立颜色：它标的是「即将被拆掉」的位置，必须与建造预览一眼分得开，
+        // 所以不吃 preview.build-glow（那个默认是不发光的）。
+        BlockData displayData = displayData(player.getWorld().getBlockAt(
+                plan.get(0).x(), plan.get(0).y(), plan.get(0).z()).getBlockData());
+        Color glow = parseGlow(config.previewDestroyGlow());
+        debug(player, "渲染 " + plan.size() + " 个撤销预览方块");
+        render(player, plan, displayData, glow == null ? Color.fromRGB(0xFF4040) : glow);
     }
 
     /**
      * 决定预览实体显示成什么方块。
      *
-     * <p>默认用 BetterNether 的白石英玻璃 {@code betternether:quartz_glass_white}：
-     * 它本身就是透明方块，BlockDisplay 靠方块材质的透明度做出「幽灵」效果，
-     * 玩家能透过预览看清后面的地形。配置值 {@code TARGET} 表示用被瞄准的那颗方块
-     * （不透明、所见即所得）；其它值按方块 id 解析，解析失败也回落到 TARGET，
+     * <p>默认用本插件资源包里的 {@code buildingwand:preview}：64x64 贴图、
+     * 四条边各 1px 纯白、中间全透明，据此做出「只描边框、中间能透过去看地形」的效果。
+     * 配置值 {@code TARGET} 表示用被瞄准的那颗方块（不透明、所见即所得）；
+     * 其它值按方块 id 解析，解析失败也回落到 TARGET，
      * 避免因为写错配置导致整个预览消失。</p>
      */
     private BlockData displayData(BlockData target) {

@@ -1,35 +1,40 @@
 # 建筑之杖 语言文件（MiniMessage）
 #
-# 配色按「角色」而非「好看」来分，全文件只有四个职责：
-#   锚色  #8FE3A8 → #3E8E58  品牌绿，只出现在前缀与分区标题
-#   强调  gold              载荷（玩家名、之杖名、数量、核心名）
-#   中性  gray / white      正文与说明，说明一律 gray
-#   警示  red / yellow      仅用于失败与警告，绝不做装饰
+# 基调：工匠、砖石、草木——温和、可靠、不吵。提示会被高频阅读，所以克制饱和度。
+# 全文件只有五个角色，每个颜色只做一件事：
+#   锚色  #9BE7B0 → #4F9D69  品牌绿渐变，只用于前缀与标题
+#   强调  #F5C26B            载荷：玩家名、之杖名、数量、选项值
+#   指令  #7DD3FC            可执行的指令
+#   中性  gray / dark_gray   正文说明用 gray，分隔符与连接词用 dark_gray
+#   状态  成功 #86EFAC  警告 #FBBF24  错误 #FDA4AF   仅表达结果，绝不做装饰
 # 占位符在代码里以 <name> 形式替换
 
-prefix: '<gradient:#8FE3A8:#3E8E58><bold>建筑之杖</bold></gradient> <dark_gray>»</dark_gray> '
+prefix: '<gradient:#9BE7B0:#4F9D69><bold>建筑之杖</bold></gradient> <dark_gray>»</dark_gray> '
+
+# ---- 启动 ----------------------------------------------------------------
+enabled: '<#86EFAC>加载成功</#86EFAC> <dark_gray>·</dark_gray> <gray>感谢您使用我的插件</gray> <#F5C26B>OvO</#F5C26B>'
 
 # ---- 权限与状态 ----------------------------------------------------------
-no-permission: '<red>你没有权限那么做'
-player-only: '<red>该指令只能由玩家执行'
-reload-done: '<green>配置与语言已重载'
+no-permission: '<#FDA4AF>权限不足</#FDA4AF> <dark_gray>·</dark_gray> <gray>你没有执行该操作的权限</gray>'
+player-only: '<#FDA4AF>仅限玩家</#FDA4AF> <dark_gray>·</dark_gray> <gray>该指令只能在游戏内执行</gray>'
+reload-done: '<#86EFAC>重载完成</#86EFAC> <dark_gray>·</dark_gray> <gray>配置、语言与资源包已刷新</gray>'
 
 # ---- 物品发放 ------------------------------------------------------------
-give-other: '<white>已给予 </white><gold><player></gold><white> </white><gold><tier></gold>'
-give-received: '<white>你收到了 </white><gold><tier></gold>'
-unknown-tier: '<red>没有这个档位</red> <dark_gray>·</dark_gray> <gray>可选：石 / 铁 / 钻石</gray>'
-player-not-found: '<red>找不到玩家</red> <gold><player></gold>'
-ce-not-ready: '<red>前置尚未就绪</red> <dark_gray>·</dark_gray> <gray>CraftEngine 还没加载完，稍后再试</gray>'
+give-other: '<#86EFAC>已发放</#86EFAC> <dark_gray>·</dark_gray> <gray>给予 </gray><#F5C26B><player></#F5C26B> <gray>一支</gray><#F5C26B><tier></#F5C26B>'
+give-received: '<#86EFAC>收到之杖</#86EFAC> <dark_gray>·</dark_gray> <#F5C26B><tier></#F5C26B> <gray>已放入背包</gray>'
+unknown-tier: '<#FDA4AF>没有这个等级</#FDA4AF> <dark_gray>·</dark_gray> <gray>可选 </gray><#7DD3FC>stone</#7DD3FC><dark_gray> / </dark_gray><#7DD3FC>iron</#7DD3FC><dark_gray> / </dark_gray><#7DD3FC>diamond</#7DD3FC>'
+player-not-found: '<#FDA4AF>找不到玩家</#FDA4AF> <dark_gray>·</dark_gray> <#F5C26B><player></#F5C26B> <gray>不在线</gray>'
+ce-not-ready: '<#FBBF24>前置未就绪</#FBBF24> <dark_gray>·</dark_gray> <gray>CraftEngine 还没加载完之杖，请稍后再试</gray>'
 
 # ---- 放置反馈 ------------------------------------------------------------
-not-enough-blocks: '<yellow>方块不够</yellow> <dark_gray>·</dark_gray> <white>本次只放了 </white><gold><count></gold><white> 格</white>'
+not-enough-blocks: '<#FBBF24>方块不足</#FBBF24> <dark_gray>·</dark_gray> <gray>本次只铺了 </gray><#F5C26B><count></#F5C26B><gray> 格</gray>'
 
 # ---- 撤销 ----------------------------------------------------------------
-undo-success: '<green>已撤销</green> <dark_gray>·</dark_gray> <white>还原 </white><gold><count></gold><white> 格</white>'
+undo-success: '<#86EFAC>已撤销</#86EFAC> <dark_gray>·</dark_gray> <gray>还原了 </gray><#F5C26B><count></#F5C26B><gray> 格方块</gray>'
 undo-none: '<gray>没有可以撤销的操作</gray>'
 
-# ---- 核心与限制 ----------------------------------------------------------
-lock-switched: '<white>限制 </white><dark_gray>»</dark_gray> <gold><lock></gold>'
+# ---- 放置限制 ------------------------------------------------------------
+lock-switched: '<gray>放置限制</gray> <dark_gray>»</dark_gray> <#F5C26B><lock></#F5C26B>'
 
 lock-HORIZONTAL: '水平'
 lock-VERTICAL: '垂直'
@@ -41,30 +46,30 @@ match-EXACT: '完全相同'
 match-SIMILAR: '相似'
 match-ANY: '任意'
 
-state-on: '<green>开启'
-state-off: '<gray>关闭'
+state-on: '<#86EFAC>开启'
+state-off: '<dark_gray>关闭'
 
 direction-TARGET: '目标'
 direction-PLAYER: '玩家'
 
 # ---- 选项界面 ------------------------------------------------------------
-# 标题只留品牌色，不加渐变：选项界面会反复打开，渐变在这里属于过度装饰
-options-title: '<dark_gray>建筑之杖 <dark_gray>·</dark_gray> <gray>选项'
+# 选项界面会反复打开，标题不加渐变；图标名用「标签 · 当前值」，说明行一律 gray
+options-title: '<dark_gray>建筑之杖 · 选项'
 
-gui-tier: '<gray>当前之杖</gray> <dark_gray>·</dark_gray> <gold><value></gold>'
-gui-lock: '<gray>放置限制</gray> <dark_gray>·</dark_gray> <gold><value></gold>'
-gui-lock-lore: '<gray>点击切换扩展方向'
-gui-direction: '<gray>放置朝向</gray> <dark_gray>·</dark_gray> <gold><value></gold>'
-gui-direction-lore: '<gray>目标：朝向跟随被放置的支撑面<newline><gray>玩家：朝向跟随你自己'
-gui-replace: '<gray>替换方块</gray> <dark_gray>·</dark_gray> <gold><value></gold>'
-gui-replace-lore: '<gray>是否顶替水、雪、草丛这类可替换方块'
-gui-match: '<gray>方块匹配</gray> <dark_gray>·</dark_gray> <gold><value></gold>'
-gui-match-lore: '<gray>相同：只延伸同种方块<newline><gray>相似：同组方块视为同类<newline><gray>任意：只要不是空气'
-gui-random: '<gray>随机模式</gray> <dark_gray>·</dark_gray> <gold><value></gold>'
-gui-random-lore: '<gray>从快捷栏随机取方块'
-gui-close: '<red>关闭'
-gui-info: '<gray>一次最多铺 </gray><gold><limit></gold><gray> 格</gray>'
+gui-tier: '<!i><gray>当前之杖</gray> <dark_gray>·</dark_gray> <#F5C26B><value></#F5C26B>'
+gui-info: '<!i><gray>一次最多铺 </gray><#F5C26B><limit></#F5C26B><gray> 格</gray>'
+gui-lock: '<!i><gray>放置限制</gray> <dark_gray>·</dark_gray> <#F5C26B><value></#F5C26B>'
+gui-lock-lore: '<!i><gray>点击切换铺开方向'
+gui-direction: '<!i><gray>放置朝向</gray> <dark_gray>·</dark_gray> <#F5C26B><value></#F5C26B>'
+gui-direction-lore: '<!i><gray>目标：朝向跟随被点击的面<newline><!i><gray>玩家：朝向跟随你自己'
+gui-replace: '<!i><gray>替换方块</gray> <dark_gray>·</dark_gray> <#F5C26B><value></#F5C26B>'
+gui-replace-lore: '<!i><gray>是否顶替水、雪、草丛这类可替换方块'
+gui-match: '<!i><gray>方块匹配</gray> <dark_gray>·</dark_gray> <#F5C26B><value></#F5C26B>'
+gui-match-lore: '<!i><gray>完全相同：只延伸同种方块<newline><!i><gray>相似：同组方块视为同类<newline><!i><gray>任意：只要不是空气'
+gui-random: '<!i><gray>随机取物</gray> <dark_gray>·</dark_gray> <#F5C26B><value></#F5C26B>'
+gui-random-lore: '<!i><gray>从快捷栏随机挑选要放的方块'
+gui-close: '<!i><gray>关闭'
 
 # ---- 指令帮助 ------------------------------------------------------------
-# 指令统一 aqua（可点击/可执行的语义色），说明统一 gray，分隔符统一 dark_gray
-help: '<aqua>/bw give [玩家] <等级></aqua> <dark_gray>»</dark_gray> <gray>发放之杖</gray><newline><aqua>/bw undo</aqua> <dark_gray>»</dark_gray> <gray>撤销上一次操作</gray><newline><aqua>/bw reload</aqua> <dark_gray>»</dark_gray> <gray>重载配置与语言</gray>'
+# 指令统一 #7DD3FC，说明统一 gray，分隔符统一 dark_gray；只有标题行用品牌渐变
+help: '<gradient:#9BE7B0:#4F9D69><bold>建筑之杖</bold></gradient> <dark_gray>· 指令</dark_gray><newline><#7DD3FC>/bw give [玩家] <等级></#7DD3FC> <dark_gray>»</dark_gray> <gray>发放之杖</gray><newline><#7DD3FC>/bw undo</#7DD3FC> <dark_gray>»</dark_gray> <gray>撤销上一次操作</gray><newline><#7DD3FC>/bw reload</#7DD3FC> <dark_gray>»</dark_gray> <gray>重载配置、语言与资源包</gray>'

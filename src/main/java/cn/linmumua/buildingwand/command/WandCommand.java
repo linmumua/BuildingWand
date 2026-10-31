@@ -42,7 +42,7 @@ public final class WandCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(lang.msg("help"));
+            sender.sendMessage(lang.plain("help"));
             return true;
         }
         switch (args[0].toLowerCase(Locale.ROOT)) {
@@ -62,7 +62,7 @@ public final class WandCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             default -> {
-                sender.sendMessage(lang.msg("help"));
+                sender.sendMessage(lang.plain("help"));
                 return true;
             }
         }
@@ -100,7 +100,7 @@ public final class WandCommand implements CommandExecutor, TabCompleter {
         }
         WandOptions.defaults(config).save(wand, keys);
         // 【把耐久上限写进物品组件】
-        // 之杖底材是 stick，木棍本身没有耐久，不写 max_damage 的话客户端不会显示耐久条，
+        // 之杖底材是 paper，纸本身没有耐久，不写 max_damage 的话客户端不会显示耐久条，
         // 玩家也完全看不出自己还剩多少耐久。工作台合出来的之杖会在首次使用时补上同样的组件。
         int maxDamage = config.tier(tier).durability();
         if (maxDamage > 0) {

@@ -1,6 +1,6 @@
 items:
   buildingwand:stone_wand:
-    material: stick
+    material: paper
     data:
       item-name: '<!i>石之杖'
       lore:
@@ -9,7 +9,7 @@ items:
       type: minecraft:model
       path: buildingwand:item/stone_wand
   buildingwand:iron_wand:
-    material: stick
+    material: paper
     data:
       item-name: '<!i>铁之杖'
       lore:
@@ -18,7 +18,7 @@ items:
       type: minecraft:model
       path: buildingwand:item/iron_wand
   buildingwand:diamond_wand:
-    material: stick
+    material: paper
     data:
       item-name: '<!i>钻石之杖'
       lore:

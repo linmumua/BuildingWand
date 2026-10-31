@@ -110,6 +110,11 @@ public final class YamlDocument {
         return v instanceof Number n ? n.intValue() : def;
     }
 
+    public double getDouble(String path, double def) {
+        Object v = get(path);
+        return v instanceof Number n ? n.doubleValue() : def;
+    }
+
     public boolean getBoolean(String path, boolean def) {
         Object v = get(path);
         return v instanceof Boolean b ? b : def;

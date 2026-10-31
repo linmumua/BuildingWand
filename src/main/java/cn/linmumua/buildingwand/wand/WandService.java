@@ -170,8 +170,8 @@ public final class WandService {
     /**
      * 扣一点耐久。
      *
-     * <p><b>必须走数据组件，不能用 {@link Damageable}</b>：之杖的底材是 {@code stick}，
-     * 木棍的 ItemMeta 不是 Damageable，旧写法里 {@code meta instanceof Damageable}
+     * <p><b>必须走数据组件，不能用 {@link Damageable}</b>：之杖的底材是 {@code paper}，
+     * 纸的 ItemMeta 不是 Damageable，旧写法里 {@code meta instanceof Damageable}
      * 永远为假，于是耐久一点都扣不掉——表面上「实现了耐久」，实际完全没生效。
      * 1.20.5 之后任何物品都能通过 {@code max_damage}/{@code damage} 组件变成耐久物品，
      * 客户端也据此显示耐久条与「耐久不足」提示。</p>

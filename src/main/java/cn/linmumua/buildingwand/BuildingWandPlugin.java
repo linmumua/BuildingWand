@@ -63,7 +63,8 @@ public final class BuildingWandPlugin extends JavaPlugin {
 
         registerCommands();
 
-        getLogger().info("建筑之杖已加载。");
+        // 走控制台发送者而不是 getLogger()：Logger 只认纯文本，MiniMessage 的颜色会被原样打成标签
+        Bukkit.getConsoleSender().sendMessage(lang.msg("enabled"));
     }
 
     @Override

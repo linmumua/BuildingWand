@@ -1,6 +1,7 @@
 package cn.linmumua.buildingwand.compat;
 
 import cn.linmumua.buildingwand.wand.Pos;
+import net.momirealms.craftengine.bukkit.api.CraftEngineFurniture;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -122,12 +123,40 @@ public final class EntityOccupancy {
 
         Set<Pos> blocked = new HashSet<>();
         for (Entity entity : nearby) {
-            // 只认活着的 LivingEntity：盔甲架、掉落物、箭这些不影响落块，
-            // 而 CraftEngine 家具的 shulker 碰撞箱正好是 LivingEntity
-            if (!(entity instanceof LivingEntity living) || living.isDead()) {
+            if (ignoredEntityIds != null && ignoredEntityIds.contains(entity.getUniqueId())) {
                 continue;
             }
-            if (ignoredEntityIds != null && ignoredEntityIds.contains(living.getUniqueId())) {
+            // 【CraftEngine 家具必须显式识别】
+            // 家具的碰撞箱是 invisible 的 shulker，包围盒由 hitbox 的 position/scale/peek
+            // 算出，往往只覆盖半格甚至更小；只靠 getBoundingBox() 摊方块，会漏掉那些
+            // 「碰撞箱缩在格子中间」的家具，于是预览画出来、右键却把家具埋了。
+            //
+            // 这里优先用 CE 自己的判据：isCollisionEntity 认的是家具碰撞箱、
+            // isFurniture 认的是家具本体实体。命中任一，就把它的包围盒按
+            // 「向上取整到整格」的方式计入，宁可多挡一格也不埋家具。
+            if (isCraftEngineFurniture(entity)) {
+                BoundingBox box = entity.getBoundingBox();
+                for (Pos pos : coveredBlocks(box.getMinX(), box.getMinY(), box.getMinZ(),
+                        box.getMaxX(), box.getMaxY(), box.getMaxZ())) {
+                    if (targets.contains(pos)) {
+                        blocked.add(pos);
+                    }
+                }
+                // 家具本体实体（ItemDisplay）的包围盒可能为零体积，碰撞箱又可能偏小，
+                // 因此额外把「家具所在方块」也算作占用。
+                if (entity.getLocation() != null) {
+                    Pos origin = new Pos(entity.getLocation().getBlockX(),
+                            entity.getLocation().getBlockY(),
+                            entity.getLocation().getBlockZ());
+                    if (targets.contains(origin)) {
+                        blocked.add(origin);
+                    }
+                }
+                continue;
+            }
+            // 其余情况只认活着的 LivingEntity：盔甲架、掉落物、箭这些不影响落块，
+            // 而 CraftEngine 家具的 shulker 碰撞箱本身就是 LivingEntity。
+            if (!(entity instanceof LivingEntity living) || living.isDead()) {
                 continue;
             }
             BoundingBox box = living.getBoundingBox();
@@ -139,5 +168,21 @@ public final class EntityOccupancy {
             }
         }
         return blocked;
+    }
+
+    /**
+     * 这个实体是不是 CraftEngine 家具（本体或碰撞箱）。
+     *
+     * <p>CE 未安装时全部返回 false，不影响本插件在无 CE 环境下的行为。</p>
+     */
+    private static boolean isCraftEngineFurniture(Entity entity) {
+        try {
+            return CraftEngineFurniture.isFurniture(entity)
+                    || CraftEngineFurniture.isCollisionEntity(entity)
+                    || CraftEngineFurniture.isSeat(entity);
+        } catch (Throwable t) {
+            // CE 未就绪或 API 版本差异：按「不是家具」处理，退回通用判据
+            return false;
+        }
     }
 }

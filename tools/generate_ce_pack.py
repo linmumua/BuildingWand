@@ -153,7 +153,7 @@ def main() -> None:
     for tier, (name, lore) in WANDS.items():
         lines += [
             f"  {NAMESPACE}:{tier}_wand:",
-            "    material: stick",
+            "    material: paper",
             "    data:",
             f"      item-name: '<!i>{name}'",
         ]

@@ -41,6 +41,7 @@ public final class Config {
     private int previewMaxBlocks;
     private String previewBuildGlow;
     private String previewDestroyGlow;
+    private double previewPeek;
     private boolean previewDebug;
     private String previewBuildMaterial;
 
@@ -90,8 +91,10 @@ public final class Config {
         c.previewIntervalTicks = Math.max(1, doc.getInt("preview.interval-ticks", 4));
         c.previewMaxBlocks = Math.max(1, doc.getInt("preview.max-blocks", 256));
         c.previewBuildGlow = doc.getString("preview.build-glow", "");
-        c.previewDestroyGlow = doc.getString("preview.destroy-glow", "#FF8080");
+        c.previewDestroyGlow = doc.getString("preview.destroy-glow", "#FF4040");
         c.previewDebug = doc.getBoolean("preview.debug", false);
+        // 预览高度：1 = 整格，0.5 = 半砖；上限 2，下限取 0.0625（1 像素），避免 0 或负数让预览消失/翻转
+        c.previewPeek = Math.max(0.0625, Math.min(2.0, doc.getDouble("preview.peek", 1.0)));
         c.previewBuildMaterial = doc.getString("preview.build-material", "buildingwand:preview");
     }
 
@@ -158,6 +161,11 @@ public final class Config {
 
     public int previewIntervalTicks() {
         return previewIntervalTicks;
+    }
+
+    /** 预览方块的显示高度（格），范围 0.0625~2，宽度始终为 1。 */
+    public double previewPeek() {
+        return previewPeek;
     }
 
     public int previewMaxBlocks() {
