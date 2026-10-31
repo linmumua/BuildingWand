@@ -54,12 +54,12 @@ def blob_sha(path: str) -> str:
     而 Windows 工作区磁盘上是 CRLF。直接上传原文会让远程与本地 git 索引
     的哈希对不上，之后正常 push 时 git 会把这些文件全都当成改动。
     """
-    with open(path, "rb") as handle:
-        data = handle.read()
-    if path.endswith(".bat"):
-        data = data.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
-    elif not path.endswith((".jar", ".png", ".zip", ".bbmodel")):
-        data = data.replace(b"\r\n", b"\n")
+    # 直接取 git 索引中的内容，换行与本地仓库完全一致，无需自行猜测
+    proc = subprocess.run(["git", "cat-file", "blob", f":{path}"],
+                          capture_output=True)
+    if proc.returncode != 0:
+        raise SystemExit(f"读取索引失败: {path}")
+    data = proc.stdout
     encoded = base64.b64encode(data).decode("ascii")
     result = gh([f"repos/{REPO}/git/blobs", "--method", "POST"],
                 {"content": encoded, "encoding": "base64"})
