@@ -27,15 +27,15 @@
 
 | 依赖 | 版本 |
 |---|---|
-| 服务端 | Paper / Folia 1.21.11+（开发与测试基于 Folia 26.3） |
+| 服务端 | Paper / Folia 26.1.2、26.2、26.3（按服务端版本下载对应 jar） |
 | CraftEngine | **硬前置**，之杖物品、模型、贴图、预览方块全部由它提供 |
-| Java | 21+ |
+| Java | 25+ |
 
 > CraftEngine 是硬依赖：缺少它时插件会加载失败，因为所有物品本体都是 CE 物品而非原版物品。
 
 ## 安装
 
-1. 把 `BuildingWand-*.jar` 放进服务端的 `plugins/` 目录
+1. 从 [Releases](https://github.com/linmumua/BuildingWand/releases) 下载与服务端版本对应的 `BuildingWand-<版本>-mc<服务端版本>.jar`，放进 `plugins/` 目录
 2. 确保 CraftEngine 已安装并正常运行
 3. 启动服务端
 
@@ -130,11 +130,11 @@ preview:
 然后：
 
 ```bash
-./gradlew build          # 编译、跑测试、校验资源包
+./gradlew build -Pmc=26.3   # 编译、跑测试、校验资源包；-Pmc 可选 26.1.2 / 26.2 / 26.3，默认 26.3
 ./gradlew verifyCePack   # 只校验 CraftEngine 资源包
 ```
 
-产物在 `build/libs/BuildingWand-<版本>.jar`。
+产物在 `build/libs/BuildingWand-<插件版本>-mc<服务端版本>.jar`。
 
 ## 项目结构
 

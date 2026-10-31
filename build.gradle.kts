@@ -60,8 +60,23 @@ repositories.whenObjectAdded {
 // 算法层测试不依赖 TabooLib，所以给测试一套极短的独立 classpath。
 val pureTestRuntime: Configuration by configurations.creating
 
+// 目标服务端版本：gradlew build -Pmc=26.1.2 / 26.2 / 26.3，默认 26.3。
+// 每个版本对应该分支最新的 stable 构建，产物名带 -mc<版本> 后缀。
+val paperApiBuilds = mapOf(
+    "26.1.2" to "26.1.2.build.74-stable",
+    "26.2" to "26.2.build.135-stable",
+    "26.3" to "26.3.build.235-stable"
+)
+val mcVersion = providers.gradleProperty("mc").getOrElse("26.3")
+val paperApiVersion = paperApiBuilds[mcVersion]
+    ?: throw GradleException("不支持的 -Pmc=$mcVersion，可选：${paperApiBuilds.keys}")
+
+tasks.named<Jar>("jar") {
+    archiveClassifier.set("mc$mcVersion")
+}
+
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$paperApiVersion")
     // CraftEngine 未发布标准 Maven 坐标：编译期用本地 jar，运行期由前置插件提供。
     compileOnly(files("libs/craft-engine-paper-plugin-26.10-SNAPSHOT.jar"))
     // 服务端自带 snakeyaml（Bukkit 的 YamlConfiguration 就依赖它），编译期声明即可。
@@ -122,7 +137,8 @@ configurations.configureEach {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        // 26.x 的 paper-api 以 Java 25 编译（类文件版本 69）
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
