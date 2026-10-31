@@ -63,6 +63,15 @@ public final class WandService {
         return ACTION.compute(view, hit, face, options.lock(), matcher, limit);
     }
 
+    /** 玩家身上可用于放置的该方块数量；创造模式不扣方块，视为无限。 */
+    public int availableBlocks(Player player, WandOptions options, Material material) {
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return Integer.MAX_VALUE;
+        }
+        BlockSupply supply = options.random() ? BlockSupply.random(player) : BlockSupply.inventory(player);
+        return supply.count(material);
+    }
+
     /** 本次最多能操作多少格。 */
     public int limitFor(Player player, WandTier tier) {
         Config.TierProps props = config.tier(tier);

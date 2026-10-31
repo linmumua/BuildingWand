@@ -207,7 +207,9 @@ public final class PreviewTask {
         BlockData data = clicked.getBlockData();
 
         UUID id = player.getUniqueId();
-        String cheap = cheapKeyOf(hitPos, face, options, data);
+        // 可用方块数并入缓存键：瞄准不动但背包数量变了（捡起/用掉方块）时预览要立即跟着变
+        int available = service.availableBlocks(player, options, data.getMaterial());
+        String cheap = cheapKeyOf(hitPos, face, options, data) + '|' + available;
         int idle = idleTicks.merge(id, 1, Integer::sum);
         // 瞄准目标与选项都没变，且没到强制刷新周期：直接沿用现有实体，不跑 BFS
         if (cheap.equals(cheapKey.get(id)) && idle < FORCE_REFRESH_CYCLES) {
@@ -240,6 +242,17 @@ public final class PreviewTask {
             debug(player, "跳过：计划被实体占据而清空（命中=" + clicked.getType() + "）");
             clear(player);
             return;
+        }
+
+        // 只显示背包实际放得下的格数：手里只有 X 个方块就只预览 X 格。
+        // 同样放在实体过滤之后裁，被挡住的格子不会白占名额。
+        if (available <= 0) {
+            debug(player, "跳过：背包里没有可放置的方块（" + data.getMaterial() + "）");
+            clear(player);
+            return;
+        }
+        if (plan.size() > available) {
+            plan = plan.subList(0, available);
         }
 
         // 上限在过滤之后才裁：否则被挡掉的格子会白占名额，玩家看到的位置比该有的更少

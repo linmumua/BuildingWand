@@ -20,6 +20,9 @@ public interface BlockSupply {
     /** 尝试取走 1 个；成功返回 true。 */
     boolean takeOne(Material type);
 
+    /** 当前一共能提供多少个该方块（预览按它裁剪，显示数量不超过实际可放数量）。 */
+    int count(Material type);
+
     /**
      * 标准实现：副手 → 快捷栏 → 主背包。
      * 潜影盒等容器供给尚未实现（原模组的容器能力不在本期范围）。
@@ -61,6 +64,19 @@ public interface BlockSupply {
                 setSlotItem(slot, null);
             }
             return true;
+        }
+
+        @Override
+        public int count(Material type) {
+            PlayerInventory inv = player.getInventory();
+            // getSize() 已包含副手格，与 findSlot 的扫描范围一致，不要再单独加副手
+            int total = 0;
+            for (int i = 0; i < inv.getSize(); i++) {
+                if (matches(inv.getItem(i), type)) {
+                    total += inv.getItem(i).getAmount();
+                }
+            }
+            return total;
         }
 
         /** 未找到 */
@@ -128,6 +144,19 @@ public interface BlockSupply {
                 player.getInventory().setItem(slot, null);
             }
             return true;
+        }
+
+        @Override
+        public int count(Material type) {
+            // 随机模式不看类型，快捷栏里所有方块物都算
+            int total = 0;
+            for (int slot : candidates()) {
+                ItemStack stack = player.getInventory().getItem(slot);
+                if (stack != null) {
+                    total += stack.getAmount();
+                }
+            }
+            return total;
         }
 
         /** 供执行层取「本次要放的方块」。 */
