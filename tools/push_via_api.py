@@ -14,6 +14,7 @@ import base64
 import json
 import subprocess
 import sys
+import time
 
 REPO = "linmumua/BuildingWand"
 BRANCH = "main"
@@ -24,11 +25,13 @@ def gh(args: list[str], payload: dict | None = None) -> dict:
     cmd = ["gh", "api"] + args
     if payload is not None:
         cmd += ["--input", "-"]
-    proc = subprocess.run(
-        cmd,
-        input=json.dumps(payload).encode("utf-8") if payload is not None else None,
-        capture_output=True,
-    )
+    data = json.dumps(payload).encode("utf-8") if payload is not None else None
+    # 网络偶发 401/5xx/超时，最多重试 5 次
+    for attempt in range(5):
+        proc = subprocess.run(cmd, input=data, capture_output=True)
+        if proc.returncode == 0:
+            break
+        time.sleep(2 * (attempt + 1))
     if proc.returncode != 0:
         sys.stderr.write(proc.stderr.decode("utf-8", "replace"))
         raise SystemExit(f"gh api 失败: {' '.join(cmd)}")
