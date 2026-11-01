@@ -105,6 +105,7 @@ misc:
 
 preview:
   peek: 1.0                       # 预览方块显示高度：1 整格，0.5 半砖，最高 2，宽度不变
+  border-opacity: 1.0             # 预览方块 1px 边框透明度：1 不透明，0 看不见；/bw reload 后替换 CE 贴图
   build-glow: ''                  # 铺面预览发光色，留空不发光
   destroy-glow: '#FF4040'         # 撤销预览发光色
   build-material: 'buildingwand:preview'  # 预览方块外观，TARGET 表示用目标方块

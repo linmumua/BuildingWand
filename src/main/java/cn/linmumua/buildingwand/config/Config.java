@@ -42,6 +42,7 @@ public final class Config {
     private String previewBuildGlow;
     private String previewDestroyGlow;
     private double previewPeek;
+    private int previewBorderAlpha;
     private boolean previewDebug;
     private String previewBuildMaterial;
 
@@ -95,6 +96,9 @@ public final class Config {
         c.previewDebug = doc.getBoolean("preview.debug", false);
         // 预览高度：1 = 整格，0.5 = 半砖；上限 2，下限取 0.0625（1 像素），避免 0 或负数让预览消失/翻转
         c.previewPeek = Math.max(0.0625, Math.min(2.0, doc.getDouble("preview.peek", 1.0)));
+        // 边框透明度 0~1，换算成贴图像素的 alpha（0~255）
+        double opacity = Math.max(0.0, Math.min(1.0, doc.getDouble("preview.border-opacity", 1.0)));
+        c.previewBorderAlpha = (int) Math.round(opacity * 255);
         c.previewBuildMaterial = doc.getString("preview.build-material", "buildingwand:preview");
     }
 
@@ -168,6 +172,10 @@ public final class Config {
         return previewPeek;
     }
 
+    /** 预览方块 1px 边框的 alpha（0~255），由 preview.border-opacity 换算。 */
+    public int previewBorderAlpha() {
+        return previewBorderAlpha;
+    }
     public int previewMaxBlocks() {
         return previewMaxBlocks;
     }

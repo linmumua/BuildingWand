@@ -1,6 +1,9 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "buildingwand:block/preview"
+    "all": {
+      "sprite": "buildingwand:block/preview",
+      "force_translucent": true
+    }
   }
 }

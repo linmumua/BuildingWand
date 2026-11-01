@@ -83,7 +83,10 @@ def write_preview_block(assets: Path, conf_dir: Path) -> None:
 
     model = {
         "parent": "minecraft:block/cube_all",
-        "textures": {"all": f"{NAMESPACE}:block/{PREVIEW_BLOCK}"},
+        # force_translucent：边框透明度可配（preview.border-opacity），半透明像素要走
+        # 半透明渲染层，否则会被当成镂空处理，只剩「全显示 / 全隐藏」两种结果
+        "textures": {"all": {"sprite": f"{NAMESPACE}:block/{PREVIEW_BLOCK}",
+                             "force_translucent": True}},
     }
     (block_models / f"{PREVIEW_BLOCK}.json").write_text(
         json.dumps(model, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

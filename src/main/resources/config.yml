@@ -67,5 +67,9 @@ preview:
   # 默认用本插件资源包里的 preview 方块（64x64 贴图、1px 白色描边、中间全透明），
   # 也可以填任何原版方块 id，或填 TARGET 显示被瞄准的真实方块。
   build-material: 'buildingwand:preview'
+  # 预览方块 1px 边框的透明度：1 = 完全不透明（默认），0.5 = 半透明，0 = 完全看不见。
+  # 只对默认的 buildingwand:preview 方块生效。修改后执行 /bw reload 会重新生成贴图并替换到 CraftEngine，
+  # 再执行 /ce reload all 重建资源包，玩家重新加载资源包后可见
+  border-opacity: 1.0
   # 输出预览诊断日志（需要 buildingwand.debug 权限），排查「预览不出现」时打开
   debug: false

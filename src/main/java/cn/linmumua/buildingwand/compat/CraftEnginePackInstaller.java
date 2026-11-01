@@ -23,6 +23,7 @@ import java.util.List;
 public final class CraftEnginePackInstaller {
 
     private static final String BUNDLE_ROOT = "craftengine/buildingwand";
+    static final String PREVIEW_TEXTURE_ENTRY = "resourcepack/assets/buildingwand/textures/block/preview.png";
 
     private CraftEnginePackInstaller() {
     }
@@ -32,7 +33,7 @@ public final class CraftEnginePackInstaller {
      *
      * @return 是否有文件被写入（true 表示需要重载 CE 才能生效）
      */
-    public static boolean install(Plugin plugin) {
+    public static boolean install(Plugin plugin, int previewBorderAlpha) {
         Plugin craftEngine = Bukkit.getPluginManager().getPlugin("CraftEngine");
         if (craftEngine == null) {
             plugin.getLogger().info("未找到 CraftEngine，跳过资源包释放。");
@@ -47,7 +48,11 @@ public final class CraftEnginePackInstaller {
         try {
             for (String entry : entries) {
                 Path out = target.resolve(entry);
-                byte[] data = read(plugin, BUNDLE_ROOT + "/" + entry);
+                // 预览贴图按配置的边框透明度现场生成，不用 jar 里的默认图。
+                // 改了 preview.border-opacity 后 /bw reload 就会把新贴图写进 CE 目录。
+                byte[] data = PREVIEW_TEXTURE_ENTRY.equals(entry)
+                        ? PreviewTexture.png(previewBorderAlpha)
+                        : read(plugin, BUNDLE_ROOT + "/" + entry);
                 if (data == null) {
                     continue;
                 }

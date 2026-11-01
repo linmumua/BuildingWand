@@ -138,8 +138,11 @@ preview_model = BLOCK_MODELS / f"{PREVIEW_BLOCK}.json"
 check(preview_model.is_file(), f"{preview_id} 引用的模型 {PREVIEW_BLOCK}.json 不存在")
 if preview_model.is_file():
     model_json = json.loads(preview_model.read_text(encoding="utf-8"))
-    check(model_json.get("textures", {}).get("all") == f"{NS}:block/{PREVIEW_BLOCK}",
+    tex = model_json.get("textures", {}).get("all")
+    check(isinstance(tex, dict) and tex.get("sprite") == f"{NS}:block/{PREVIEW_BLOCK}",
           f"{preview_id} 的模型没有正确引用贴图 {NS}:block/{PREVIEW_BLOCK}")
+    check(isinstance(tex, dict) and tex.get("force_translucent") is True,
+          f"{preview_id} 的贴图缺少 force_translucent，半透明边框会被当成镂空")
 
 preview_png = BLOCK_TEXTURES / f"{PREVIEW_BLOCK}.png"
 check(preview_png.is_file(), f"{preview_id} 引用的贴图 {PREVIEW_BLOCK}.png 不存在")

@@ -45,7 +45,7 @@ public final class BuildingWandPlugin extends JavaPlugin {
         lang = Lang.load(getDataFolder(), getClassLoader());
 
         // 先把 CraftEngine 资源包释放到位，否则 /bw give 拿不到物品定义
-        CraftEnginePackInstaller.install(this);
+        CraftEnginePackInstaller.install(this, config.previewBorderAlpha());
 
         service = new WandService(config, new UndoHistory(config.undoHistory()));
 
@@ -87,7 +87,7 @@ public final class BuildingWandPlugin extends JavaPlugin {
     public void reload() {
         config.reload(getDataFolder(), getClassLoader());
         lang.reload(getDataFolder(), getClassLoader());
-        CraftEnginePackInstaller.install(this);
+        CraftEnginePackInstaller.install(this, config.previewBorderAlpha());
         recipes.registerRecipes();
     }
 
